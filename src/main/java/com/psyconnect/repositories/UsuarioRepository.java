@@ -2,11 +2,10 @@ package com.psyconnect.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.psyconnect.dto.UsuarioDto;
 import com.psyconnect.model.Usuario;
 
-public interface UsuarioRepository  extends JpaRepository<Usuario, Long>{
+public interface UsuarioRepository  extends JpaRepository<Usuario, Integer>{
 
-	UsuarioDto findByEmail(String email);
+	Usuario findByEmail(String email);
 
 }

@@ -2,8 +2,9 @@ package com.psyconnect.enums;
 
 public enum UsuarioRoleEn {
     
-    PROFESSOR(0, "PROFESSOR"),
-    USUARIO(1, "USUARIO");
+	ADMIN(1, "ADMINISTRADOR"),
+    PROFESSOR(1, "PROFESSOR"),
+    USUARIO(2, "USUARIO");
 
     private final int id;
     private final String descricao;

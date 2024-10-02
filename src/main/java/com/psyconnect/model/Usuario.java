@@ -2,12 +2,6 @@ package com.psyconnect.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.psyconnect.dto.UsuarioDto;
 import com.psyconnect.enums.UsuarioRoleEn;
@@ -29,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario implements UserDetails{
+public class Usuario{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -37,12 +31,12 @@ public class Usuario implements UserDetails{
 	@Column(name = "id_usuario_usu")
 	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "seq_id_usuario_usu")
 	@SequenceGenerator(name = "seq_id_usuario_usu", sequenceName = "sistema.seq_id_usuario_usu", initialValue = 1, allocationSize = 1)
-	private Long id;
+	private Integer id;
 	
-	@Column(name = "data_inclusao_usu", nullable = false)
+	@Column(name = "data_inclusao_usu")
 	private LocalDateTime dataInclusao;
 	
-	@Column(name = "data_finalizacao_res", nullable = false)
+	@Column(name = "data_finalizacao_usu")
 	private LocalDateTime dataFinalizacao;
 	
 	@Column(name = "nome_usu", nullable = false, length = 255)
@@ -57,14 +51,14 @@ public class Usuario implements UserDetails{
 	@Column(name = "data_nascimento_usu", nullable = false)
 	private LocalDate dataNascimento;
 	
-	@Column(name = "telefone_usu", nullable = false)
+	@Column(name = "telefone_usu")
 	private String telefone;
 	
 	@Column(name = "senha_usu", nullable = false)
 	private String senha;
 	
 	@Column(name = "role_usu", nullable = false)
-	private String role;
+	private UsuarioRoleEn role;
 	
 	@Column(name = "flag_professor_usu", nullable = false)
 	private boolean isProfessor;
@@ -86,22 +80,25 @@ public class Usuario implements UserDetails{
 		this.isProfessor = dto.isProfessor();
 	}
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if (this.role.equals(UsuarioRoleEn.USUARIO.name()))
-			return List.of(new SimpleGrantedAuthority("PROFESSOR"), new SimpleGrantedAuthority("USUARIO"));
-		else
-			return List.of(new SimpleGrantedAuthority("USUARIO"));
-	}
-	
-	@Override
-	public String getUsername() {
-		return this.email;
-	}
-
-	@Override
-	public String getPassword() {
-		return this.senha;
-	}
+//	@SuppressWarnings("unlikely-arg-type")
+//	@Override
+//	public Collection<? extends GrantedAuthority> getAuthorities() {
+//		if (this.role.equals(UsuarioRoleEn.ADMIN.getDescricao()))
+//			return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USUARIO"), new SimpleGrantedAuthority("PROFESSOR"));
+//		if ((this.role.equals(UsuarioRoleEn.USUARIO.getDescricao())))
+//			return List.of(new SimpleGrantedAuthority("USUARIO"));
+//		else
+//			return List.of(new SimpleGrantedAuthority("PROFESSOR"));
+//	}
+//	
+//	@Override
+//	public String getUsername() {
+//		return this.email;
+//	}
+//
+//	@Override
+//	public String getPassword() {
+//		return this.senha;
+//	}
 
 }
