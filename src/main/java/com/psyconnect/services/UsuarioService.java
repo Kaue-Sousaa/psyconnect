@@ -20,6 +20,8 @@ public class UsuarioService {
 	
 	private final UsuarioRepository repository;
 	
+	private final EmailService emailService;
+	
 	public List<UsuarioDto> findAll() {
 		return repository.findAll()
 				.stream()
@@ -36,8 +38,8 @@ public class UsuarioService {
 		usuarioEntity.setDataInclusao(LocalDateTime.now());
 		usuarioEntity.setSenha(SenhaUtils.gerarSenhaAleatoria());
 		
-		
-		repository.save(new Usuario(usuarioDto));
+		repository.save(usuarioEntity);
+		emailService.enviarEmailTexto(usuarioDto.email(), "Bem-vindo(a) ao Sistema PsyConnect - Detalhes da sua Conta", emailConteudo(usuarioEntity));
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
@@ -58,5 +60,21 @@ public class UsuarioService {
 	public void deletarUsuario(Integer id) {
 		var entity = repository.findById(id).orElseThrow(() -> new ResolutionException(""));
 		entity.setDataFinalizacao(LocalDateTime.now());
+	}
+	
+	private String emailConteudo(Usuario usuario) {
+		return "<html>" +
+			    "<body>" +
+			    "<h1>Cadastro realizado com sucesso!</h1>" +
+			    "<p>Olá, " + usuario.getNome() + ",</p>" +
+			    "<p>Seu cadastro no sistema foi concluído. Seguem abaixo seus dados de acesso:</p>" +
+			    "<p><b>Usuário:</b> " + usuario.getEmail() + "</p>" +
+			    "<p><b>Senha:</b> " + usuario.getSenha() + "</p>" +
+			    "<p>Por favor, faça login no sistema e altere sua senha o quanto antes.</p>" +
+			    "<br>" +
+			    "<p>Atenciosamente,</p>" +
+			    "<p>Equipe PsyConnect</p>" +
+			    "</body>" +
+			    "</html>";
 	}
 }

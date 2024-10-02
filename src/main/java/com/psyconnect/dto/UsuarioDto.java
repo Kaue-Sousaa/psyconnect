@@ -17,9 +17,9 @@ public record UsuarioDto (
 		LocalDate dataNascimento,
 		String telefone,
 		String senha,
+		String confirmSenha,
 		UsuarioRoleEn role,
-		boolean isProfessor,
-		String confirmSenha
+		boolean isProfessor
 		
 		) {
 	
@@ -34,8 +34,8 @@ public record UsuarioDto (
 				entity.getDataNascimento(), 
 				entity.getTelefone(), 
 				entity.getSenha(), 
-				entity.getRole(), 
-				entity.isProfessor(), 
-				entity.getConfirmSenha());
+				entity.getConfirmSenha(),
+				entity.getRole(),
+				entity.isProfessor()); 
 	}
 }
