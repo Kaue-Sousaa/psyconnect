@@ -42,7 +42,7 @@ public class Usuario{
 	@Column(name = "nome_usu", nullable = false, length = 255)
 	private String nome;
 	
-	@Column(name = "email_usu", nullable = false, unique = true)
+	@Column(name = "email_usu", nullable = false)
 	private String email;
 	
 	@Column(name = "cpf_usu", nullable = false, length = 11)
@@ -62,6 +62,9 @@ public class Usuario{
 	
 	@Column(name = "flag_professor_usu", nullable = false)
 	private boolean isProfessor;
+	
+	@Column(name = "data_primeiro_acesso_usu")
+	private LocalDateTime primeiroAcesso;
 	
 	@Transient
 	private String confirmSenha;

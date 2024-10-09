@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.ResourceAccessException;
 
+import com.psyconnect.dto.PrimeiroAcessoDto;
 import com.psyconnect.dto.UsuarioDto;
+import com.psyconnect.exceptions.ResourceNotFoundException;
 import com.psyconnect.services.UsuarioService;
 
 import lombok.AllArgsConstructor;
@@ -29,18 +29,14 @@ public class UsuarioController {
 	
 	@GetMapping(value = "all")
 	public ResponseEntity<List<UsuarioDto>> buscarTodosUsuarios(){
-		var allUsuario = service.findAll();
-		if(allUsuario.isEmpty()) {
-			return ResponseEntity.notFound().build();
-		}
-		return ResponseEntity.ok(allUsuario);
+		return ResponseEntity.ok(service.findAll());
 	}
 	
 	@GetMapping(value = "{email}")
-	public ResponseEntity<UsuarioDto> buscarUsuarioPorEmail(@RequestParam String email) {
+	public ResponseEntity<UsuarioDto> buscarUsuarioPorEmail(@PathVariable String email) {
 		var usuarioDto = service.buscarUsuarioPorEmail(email);
 		if(usuarioDto == null) {
-			throw new ResourceAccessException("");
+			throw new ResourceNotFoundException("Usuário não encontrado");
 		}
 		return ResponseEntity.ok(usuarioDto);
 	}
@@ -54,6 +50,11 @@ public class UsuarioController {
 	@PutMapping(value = "atualiza", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<UsuarioDto> atualizarCadastroUsuario(@RequestBody UsuarioDto usaurioDto){
 		return ResponseEntity.ok(service.atualizarUsuario(usaurioDto));
+	}
+	
+	@PostMapping(value = "/primeiro-acesso/{email}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> alterarSenhaPrimeiroAcesso(@RequestBody PrimeiroAcessoDto primeiroAcesso, @PathVariable String email){
+		return ResponseEntity.ok(service.primeiroAcesso(email, primeiroAcesso));
 	}
 	
 	@DeleteMapping(value = "{id}")
