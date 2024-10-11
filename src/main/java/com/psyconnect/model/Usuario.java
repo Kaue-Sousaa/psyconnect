@@ -2,6 +2,12 @@ package com.psyconnect.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.psyconnect.dto.UsuarioDto;
 import com.psyconnect.enums.UsuarioRoleEn;
@@ -23,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario{
+public class Usuario implements UserDetails{
 	
 	private static final long serialVersionUID = 1L;
 
@@ -83,25 +89,24 @@ public class Usuario{
 		this.isProfessor = dto.isProfessor();
 	}
 
-//	@SuppressWarnings("unlikely-arg-type")
-//	@Override
-//	public Collection<? extends GrantedAuthority> getAuthorities() {
-//		if (this.role.equals(UsuarioRoleEn.ADMIN.getDescricao()))
-//			return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USUARIO"), new SimpleGrantedAuthority("PROFESSOR"));
-//		if ((this.role.equals(UsuarioRoleEn.USUARIO.getDescricao())))
-//			return List.of(new SimpleGrantedAuthority("USUARIO"));
-//		else
-//			return List.of(new SimpleGrantedAuthority("PROFESSOR"));
-//	}
-//	
-//	@Override
-//	public String getUsername() {
-//		return this.email;
-//	}
-//
-//	@Override
-//	public String getPassword() {
-//		return this.senha;
-//	}
+	@SuppressWarnings("unlikely-arg-type")
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		if (this.role.equals(UsuarioRoleEn.ADMIN.getDescricao()))
+			return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USUARIO"), new SimpleGrantedAuthority("PROFESSOR"));
+		if ((this.role.equals(UsuarioRoleEn.USUARIO.getDescricao())))
+			return List.of(new SimpleGrantedAuthority("USUARIO"));
+		else
+			return List.of(new SimpleGrantedAuthority("PROFESSOR"));
+	}
+	
+	@Override
+	public String getUsername() {
+		return this.email;
+	}
 
+	@Override
+	public String getPassword() {
+		return this.senha;
+	}
 }

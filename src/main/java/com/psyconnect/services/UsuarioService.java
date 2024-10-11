@@ -3,6 +3,7 @@ package com.psyconnect.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.psyconnect.dto.PrimeiroAcessoDto;
@@ -44,14 +45,16 @@ public class UsuarioService {
 		usuarioStrategy.forEach(campo -> campo.validarCampos(usuarioDto));
 		
 		var usuarioEntity = new Usuario(usuarioDto);
+		var senhaGerada = SenhaUtils.gerarSenhaAleatoria();
 		usuarioEntity.setDataInclusao(LocalDateTime.now());
-		usuarioEntity.setSenha(SenhaUtils.gerarSenhaAleatoria());
+		usuarioEntity.setSenha(passwordEncoder(senhaGerada));
 		if(usuarioDto.isProfessor()) {
 			usuarioEntity.setRole(UsuarioRoleEn.PROFESSOR);
 		}
 		
 		repository.save(usuarioEntity);
-		emailService.enviarEmailTexto(usuarioDto.email(), "Bem-vindo(a) ao Sistema PsyConnect - Detalhes da sua Conta", emailConteudo(usuarioEntity));
+		emailService.enviarEmailTexto(usuarioDto.email(), "Bem-vindo(a) ao Sistema PsyConnect - Detalhes da sua Conta", 
+					emailConteudo(usuarioEntity.getNome(), usuarioEntity.getEmail(), senhaGerada));
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
@@ -81,18 +84,22 @@ public class UsuarioService {
 			throw new ResourceNotFoundException("Email não cadastrado");
 		}
 		user.setPrimeiroAcesso(LocalDateTime.now());
-		user.setSenha(primeiroAcesso.novaSenha());
+		user.setSenha(passwordEncoder(primeiroAcesso.novaSenha()));
 		return "Senha atualizada";
 	}
-
-	private String emailConteudo(Usuario usuario) {
+	
+	private String passwordEncoder(String senha) {
+		return new BCryptPasswordEncoder().encode(senha);
+	}
+	
+	private String emailConteudo(String nome, String email, String senha) {
 		return "<html>" +
 			    "<body>" +
 			    "<h1>Cadastro realizado com sucesso!</h1>" +
-			    "<p>Olá, " + usuario.getNome() + ",</p>" +
+			    "<p>Olá, " + nome + ",</p>" +
 			    "<p>Seu cadastro no sistema foi concluído. Seguem abaixo seus dados de acesso:</p>" +
-			    "<p><b>Usuário:</b> " + usuario.getEmail() + "</p>" +
-			    "<p><b>Senha:</b> " + usuario.getSenha() + "</p>" +
+			    "<p><b>Usuário:</b> " + email + "</p>" +
+			    "<p><b>Senha:</b> " + senha + "</p>" +
 			    "<p>Por favor, faça login no sistema e altere sua senha o quanto antes.</p>" +
 			    "<br>" +
 			    "<p>Atenciosamente,</p>" +

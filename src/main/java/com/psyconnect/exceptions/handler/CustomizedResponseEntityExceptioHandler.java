@@ -8,16 +8,22 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.psyconnect.exceptions.EmailInvalidoException;
 import com.psyconnect.exceptions.ExceptionResponse;
+import com.psyconnect.exceptions.ExistingObjectException;
 import com.psyconnect.exceptions.InvalidCpfException;
 import com.psyconnect.exceptions.InvalidCpfLengthException;
+import com.psyconnect.exceptions.InvalidJwtAuthenticationException;
 import com.psyconnect.exceptions.InvalidPasswordException;
+import com.psyconnect.exceptions.PrimeiroAcessoException;
 import com.psyconnect.exceptions.RequiredObjectIsNullException;
 import com.psyconnect.exceptions.ResourceNotFoundException;
 import com.psyconnect.exceptions.ValidFieldResponse;
@@ -39,7 +45,8 @@ public class CustomizedResponseEntityExceptioHandler {
     }
 
     @ExceptionHandler({RequiredObjectIsNullException.class, InvalidCpfLengthException.class,
-			InvalidPasswordException.class, InvalidCpfException.class})
+			InvalidPasswordException.class, InvalidCpfException.class, ExistingObjectException.class,
+			PrimeiroAcessoException.class, EmailInvalidoException.class})
     public final ResponseEntity<ValidFieldResponse> handleOtherExceptions(
             Exception ex, 
             WebRequest request) {
@@ -62,8 +69,8 @@ public class CustomizedResponseEntityExceptioHandler {
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 	}
 	
-//	@ExceptionHandler({InvalidJwtAuthenticationException.class})
-//		TokenExpiredException.class, InternalAuthenticationServiceException.class})
+	@ExceptionHandler({InvalidJwtAuthenticationException.class,
+		TokenExpiredException.class, InternalAuthenticationServiceException.class})
 	public final ResponseEntity<ExceptionResponse> handleInvalidJwtAuthenticationException(Exception ex, WebRequest request){
         
 		ExceptionResponse exceptionResponse = new ExceptionResponse(
