@@ -24,7 +24,11 @@ import lombok.AllArgsConstructor;
 @EnableWebSecurity
 @AllArgsConstructor
 public class SecurityConfigurations {
-private final SecurityFilter securityFilter;
+	
+	private static final String ADMIN = UsuarioRoleEn.ADMIN.getDescricao();
+	private static final String PROFESSOR = UsuarioRoleEn.PROFESSOR.getDescricao();
+	
+	private final SecurityFilter securityFilter;
 	
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -32,11 +36,11 @@ private final SecurityFilter securityFilter;
 				.sessionManagement(
 						session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(HttpMethod.GET, "v1/usuario/**", "v1/aluno/**").hasAnyRole(UsuarioRoleEn.ADMIN.name(), UsuarioRoleEn.PROFESSOR.name())
 						.requestMatchers(HttpMethod.POST, "/auth/login", "v1/usuario/cadastro", "v1/usuario/primeiro-acesso/**").permitAll()
-						.requestMatchers(HttpMethod.POST, "v1/aluno/cadastro").hasAnyRole(UsuarioRoleEn.ADMIN.name(), UsuarioRoleEn.PROFESSOR.name())
-						.requestMatchers(HttpMethod.PUT, "v1/usuario", "v1/aluno").hasAnyRole(UsuarioRoleEn.ADMIN.name(), UsuarioRoleEn.PROFESSOR.name())
-						.requestMatchers(HttpMethod.DELETE, "v1/usuario/**", "v1/aluno/**").hasRole(UsuarioRoleEn.ADMIN.name())
+						.requestMatchers(HttpMethod.GET, "v1/usuario/**", "v1/aluno/**").hasAnyRole(ADMIN, PROFESSOR)
+						.requestMatchers(HttpMethod.POST, "v1/aluno/cadastro").hasAnyRole(ADMIN, PROFESSOR)
+						.requestMatchers(HttpMethod.PUT, "v1/usuario", "v1/aluno").hasAnyRole(ADMIN, PROFESSOR)
+						.requestMatchers(HttpMethod.DELETE, "v1/usuario/**", "v1/aluno/**").hasRole(ADMIN)
 						.anyRequest().authenticated()
 				)
 				.exceptionHandling(this::configureExceptionHandling)

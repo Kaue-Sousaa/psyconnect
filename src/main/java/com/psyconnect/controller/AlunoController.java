@@ -31,7 +31,7 @@ public class AlunoController {
 		return ResponseEntity.ok(alunoService.buscarTodosAlunos());
 	} 
 	
-	@PostMapping(value = "/cadastro", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping(value = "cadastro", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> criarCadastroAluno(@RequestBody AlunoDto alunoDto){
 		alunoService.salvarCadastro(alunoDto);
 		

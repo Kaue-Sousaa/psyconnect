@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
+	
 	@Value("${api.security.token.secret}")
 	private String secret;
 	

@@ -3,7 +3,6 @@ package com.psyconnect.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import com.psyconnect.enums.UsuarioRoleEn;
 import com.psyconnect.model.Usuario;
 
 public record UsuarioDto (
@@ -18,7 +17,7 @@ public record UsuarioDto (
 		String telefone,
 		String senha,
 		String confirmSenha,
-		UsuarioRoleEn role,
+		String role,
 		boolean isProfessor
 		
 		) {

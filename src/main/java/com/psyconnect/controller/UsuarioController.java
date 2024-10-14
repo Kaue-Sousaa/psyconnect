@@ -52,9 +52,9 @@ public class UsuarioController {
 		return ResponseEntity.ok(service.atualizarUsuario(usaurioDto));
 	}
 	
-	@PostMapping(value = "/primeiro-acesso/{email}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> alterarSenhaPrimeiroAcesso(@RequestBody PrimeiroAcessoDto primeiroAcesso, @PathVariable String email){
-		return ResponseEntity.ok(service.primeiroAcesso(email, primeiroAcesso));
+	@PostMapping(value = "/primeiro-acesso", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<String> alterarSenhaPrimeiroAcesso(@RequestBody PrimeiroAcessoDto primeiroAcesso){
+		return ResponseEntity.ok(service.primeiroAcesso(primeiroAcesso));
 	}
 	
 	@DeleteMapping(value = "{id}")

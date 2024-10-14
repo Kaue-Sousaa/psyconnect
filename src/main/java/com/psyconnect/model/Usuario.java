@@ -64,7 +64,7 @@ public class Usuario implements UserDetails{
 	private String senha;
 	
 	@Column(name = "role_usu", nullable = false)
-	private UsuarioRoleEn role;
+	private String role;
 	
 	@Column(name = "flag_professor_usu", nullable = false)
 	private boolean isProfessor;
@@ -89,15 +89,17 @@ public class Usuario implements UserDetails{
 		this.isProfessor = dto.isProfessor();
 	}
 
-	@SuppressWarnings("unlikely-arg-type")
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		if (this.role.equals(UsuarioRoleEn.ADMIN.getDescricao()))
-			return List.of(new SimpleGrantedAuthority("ADMIN"), new SimpleGrantedAuthority("USUARIO"), new SimpleGrantedAuthority("PROFESSOR"));
-		if ((this.role.equals(UsuarioRoleEn.USUARIO.getDescricao())))
-			return List.of(new SimpleGrantedAuthority("USUARIO"));
+		if (this.role.equals(UsuarioRoleEn.ADMIN.name()))
+			return List.of(
+					new SimpleGrantedAuthority("ROLE_ADMIN"), 
+					new SimpleGrantedAuthority("ROLE_USUARIO"), 
+					new SimpleGrantedAuthority("ROLE_PROFESSOR"));
+		if ((this.role.equals(UsuarioRoleEn.USUARIO.name())))
+			return List.of(new SimpleGrantedAuthority("ROLE_USUARIO"));
 		else
-			return List.of(new SimpleGrantedAuthority("PROFESSOR"));
+			return List.of(new SimpleGrantedAuthority("ROLE_PROFESSOR"));
 	}
 	
 	@Override

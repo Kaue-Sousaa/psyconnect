@@ -1,6 +1,7 @@
 package com.psyconnect.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.psyconnect.dto.AlunoDto;
 
@@ -30,6 +31,12 @@ public class Aluno {
 	
 	@Column(name = "nome_alu", nullable = false)
 	private String nome;
+	
+	@Column(name = "data_inclusao_alu")
+	private LocalDateTime dataInclusao;
+	
+	@Column(name = "data_finalizacao_alu")
+	private LocalDateTime dataFinalizacao;
 	
 	@Column(name = "data_nascimento_alu")
 	private LocalDate dataNascimento;

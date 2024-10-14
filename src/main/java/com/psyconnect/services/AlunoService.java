@@ -1,5 +1,6 @@
 package com.psyconnect.services;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -31,7 +32,10 @@ public class AlunoService {
 		if(entity.isPresent()) {
 			throw new ExistingObjectException("Aluno já cadastrado");
 		}
-		alunoRepository.save(new Aluno(alunoDto));
+		var aluno = new Aluno(alunoDto);
+		aluno.setDataInclusao(LocalDateTime.now());
+		
+		alunoRepository.save(aluno);
 	}
 	
 	@Transactional(rollbackOn = Exception.class)

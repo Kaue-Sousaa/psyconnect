@@ -24,7 +24,6 @@ public class AuthService {
 	private final TokenService tokenService;
 
 	public ResponseEntity<?> login(AuthenticationDto login) {
-		
 	    authentication(login);
 	    var usuario = repository.findByEmail(login.email());
 	    
@@ -34,12 +33,13 @@ public class AuthService {
 	    if (usuario.getPrimeiroAcesso() == null) {
 	        throw new PrimeiroAcessoException("É necessário alterar a senha no primeiro acesso.");
 	    }
-	    var token = tokenService.createAccessToken(login.email(), List.of(usuario.getRole().name()), usuario);
-	    return ResponseEntity.ok(token);
+	    return ResponseEntity
+	    		.ok(tokenService.createAccessToken
+	    				(login.email(), List.of(usuario.getRole()), usuario));
 	}
 
 	private void authentication(AuthenticationDto auth) {
-		if(!isEmailValido(auth.email())) {
+		if (!isEmailValido(auth.email())) {
 			throw new EmailInvalidoException("Email inválido!");
 		}
 		authenticationManager.authenticate(

@@ -42,21 +42,17 @@ public class UsuarioService {
 	}
 	
 	public void cadastrarUsuario(UsuarioDto usuarioDto) {
-		usuarioStrategy.forEach(campo -> campo.validarCampos(usuarioDto));
-		
-		var usuarioEntity = new Usuario(usuarioDto);
-		var senhaGerada = SenhaUtils.gerarSenhaAleatoria();
-		usuarioEntity.setDataInclusao(LocalDateTime.now());
-		usuarioEntity.setSenha(passwordEncoder(senhaGerada));
-		if(usuarioDto.isProfessor()) {
-			usuarioEntity.setRole(UsuarioRoleEn.PROFESSOR);
-		}
-		
-		repository.save(usuarioEntity);
-		emailService.enviarEmailTexto(usuarioDto.email(), "Bem-vindo(a) ao Sistema PsyConnect - Detalhes da sua Conta", 
-					emailConteudo(usuarioEntity.getNome(), usuarioEntity.getEmail(), senhaGerada));
+	    validarCampos(usuarioDto);
+	    
+	    var senhaGerada = SenhaUtils.gerarSenhaAleatoria();
+	    var usuario = criarUsuario(usuarioDto, senhaGerada);
+	    atribuirRoleSeProfessor(usuarioDto, usuario);
+	    
+	    salvarUsuario(usuario);
+	    
+	    enviarEmailBoasVindas(usuario, senhaGerada);
 	}
-	
+
 	@Transactional(rollbackOn = Exception.class)
 	public UsuarioDto atualizarUsuario(UsuarioDto usuarioDto) {
 		var entity = repository.findById(usuarioDto.id()).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
@@ -77,19 +73,45 @@ public class UsuarioService {
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
-	public String primeiroAcesso(String email, PrimeiroAcessoDto primeiroAcesso) {
-		priAcessoStrategies.forEach(acesso -> acesso.validarCampos(primeiroAcesso));
-		var user = repository.findByEmail(email);
+	public String primeiroAcesso(PrimeiroAcessoDto primeiroAcessoDto) {
+		priAcessoStrategies.forEach(acesso -> acesso.validarCampos(primeiroAcessoDto));
+		var user = repository.findByEmail(primeiroAcessoDto.email());
 		if(user == null) {
 			throw new ResourceNotFoundException("Email não cadastrado");
 		}
 		user.setPrimeiroAcesso(LocalDateTime.now());
-		user.setSenha(passwordEncoder(primeiroAcesso.novaSenha()));
+		user.setSenha(passwordEncoder(primeiroAcessoDto.novaSenha()));
 		return "Senha atualizada";
 	}
 	
-	private String passwordEncoder(String senha) {
-		return new BCryptPasswordEncoder().encode(senha);
+	private void validarCampos(UsuarioDto usuarioDto) {
+	    usuarioStrategy.forEach(campo -> campo.validarCampos(usuarioDto));
+	}
+
+	private Usuario criarUsuario(UsuarioDto usuarioDto, String senhaGerada) {
+	    var usuario = new Usuario(usuarioDto);
+	    usuario.setDataInclusao(LocalDateTime.now());
+	    usuario.setSenha(passwordEncoder(senhaGerada));
+	    
+	    return usuario;
+	}
+
+	private void atribuirRoleSeProfessor(UsuarioDto usuarioDto, Usuario usuario) {
+	    if (usuarioDto.isProfessor()) {
+	        usuario.setRole(UsuarioRoleEn.PROFESSOR.getDescricao());
+	    }
+	}
+
+	private void salvarUsuario(Usuario usuario) {
+	    repository.save(usuario);
+	}
+
+	private void enviarEmailBoasVindas(Usuario usuario, String senhaGerada) {
+	    emailService.enviarEmailTexto(
+	    		usuario.getEmail(), 
+	        "Bem-vindo(a) ao Sistema PsyConnect - Detalhes da sua Conta", 
+	        emailConteudo(usuario.getNome(), usuario.getEmail(), senhaGerada)
+	    );
 	}
 	
 	private String emailConteudo(String nome, String email, String senha) {
@@ -106,5 +128,9 @@ public class UsuarioService {
 			    "<p>Equipe PsyConnect</p>" +
 			    "</body>" +
 			    "</html>";
+	}
+	
+	private String passwordEncoder(String senha) {
+		return new BCryptPasswordEncoder().encode(senha);
 	}
 }
